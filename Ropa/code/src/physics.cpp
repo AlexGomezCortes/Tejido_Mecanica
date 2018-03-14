@@ -10,9 +10,9 @@
 glm::vec3 pos[SIZE_C][SIZE_R];
 glm::vec3 speed[SIZE_C][SIZE_R];
 glm::vec3 forces[SIZE_C][SIZE_R];
-float distance = 0.8f;
+float distance = 0.5f;
 float diagonal = glm::sqrt((glm::pow(distance, 2) + glm::pow(distance, 2)));
-float elasticity = 50.f;
+float elasticity = 4.f;
 float damping = 2.f;
 glm::vec3 posBuff[SIZE_C][SIZE_R];
 
@@ -55,6 +55,11 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 				//SHEAR
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
+				//BENDING
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j + 2]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i - 2][j]));
 			}
 			//ESQUINA DERECHA ARRIBA
 			else if (i == SIZE_C-1 && j == SIZE_R-1) {
@@ -66,6 +71,11 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 				//SHEAR
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
+				//BENDING
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i - 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
 			//ESQUINA IZQUIERDA ABAJO
 			else if (i == 0 && j == 0) {
@@ -77,6 +87,11 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 				//SHEAR
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
+				//BENDING
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i + 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j + 2]));
 			}
 			//ESQUINA DERECHA ABAJO
 			else if (i == 0 && j == SIZE_R-1) {
@@ -88,6 +103,11 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 				//SHEAR
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
+				//BENDING
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i + 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
 			//IZQUIERDA
 			else if ((1<i<SIZE_C-1)&&j==0) {
@@ -103,6 +123,13 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
+				//BENDING
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i + 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i - 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j + 2]));
 			}
 			//DERECHA
 			else if ((1<i<SIZE_C-1) && j == SIZE_R-1) {
@@ -118,7 +145,13 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-
+				//BENDING
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i + 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i - 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
 			//ABAJO
 			else if (i==0&&(1<j<SIZE_R-1)) {
@@ -135,7 +168,12 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
 				//BENDING
-
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i + 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j + 2]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
 			//ARRIBA
 			else if (i==SIZE_C-1&&(SIZE_R - 1>j>1)) {
@@ -152,12 +190,13 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
 				//BENDING
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i - 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j + 2]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
-			//BENDINGS
-			/*else if (i % 2 == 0&&(1<i<SIZE_C-1)){
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i-2][j])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i-2][j]), glm::normalize((positions[i][j] - positions[i-2][j]))))*
-					glm::normalize((positions[i][j] - positions[i-2][j]));
-			}*/
 			//RESTO
 			else{
 				//STRUCTURAL
@@ -179,24 +218,19 @@ void SpringForcesStructural(glm::vec3 positions[][14]) {
 				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
 				//BENDING
-
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i + 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+					glm::normalize((positions[i][j] - positions[i - 2][j]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j + 2]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+					glm::normalize((positions[i][j] - positions[i][j - 2]));
+				
 			}
 		}
 	}
-	//BENDING
-	/*for (int i = 0; i < SIZE_C; i + 2) {
-		for (int j = 0; j < SIZE_R; j + 2) {
 
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
-				glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
-				glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
-				glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
-				glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
-		}
-	}*/
 }
 
 void SpringForcesShear(glm::vec3 positions[][14]) {
@@ -215,50 +249,48 @@ void SpringForcesShear(glm::vec3 positions[][14]) {
 }
 
 void SpringForcesBending(glm::vec3 positions[][14]) {
-	for (int i = 0; i < SIZE_C; i + 2) {
-		for (int j = 0; j < SIZE_R; j + 2) {
+	for (int i = 0; i < SIZE_C; i ++) {
+		for (int j = 0; j < SIZE_R; j ++) {
 
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - distance*2) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
-				glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - distance*2) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
-				glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - distance*2) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
-				glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - distance*2) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
-				glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
+			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+				glm::normalize((positions[i][j] - positions[i + 2][j]));
+			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+				glm::normalize((positions[i][j] - positions[i - 2][j]));
+			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+				glm::normalize((positions[i][j] - positions[i][j + 2]));
+			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+				glm::normalize((positions[i][j] - positions[i][j - 2]));
 		}
 	}
 }
 
 void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
-	glm::vec3 gravity = { 0, -9.81, 0 };
+	glm::vec3 gravity = { 0, -9.8f, 0 };
 	glm::vec3 tmp[SIZE_C][SIZE_R];
 	//RESET FORCES
 	for (int i = 0; i < SIZE_C; ++i) {
 		for (int j = 0; j < SIZE_R; ++j) {
-			forces[i][j] = { 0,0,0 };
+			forces[i][j] = gravity;
 		}
 	}
 	//APPLY FORCES
-	
 	SpringForcesStructural(pos);
+	
 	//SpringForcesShear(pos);
 	//SpringForcesBending(pos);
-	for (int i = 0; i < SIZE_C; ++i) {
-		for (int j = 0; j < SIZE_R; ++j) {
-			forces[i][j] += gravity;
-		}
-	}
 
 	//RESTRICTIONS
 	for (int i = 0; i < SIZE_C; ++i) {
 		for (int j = 0; j < SIZE_R; ++j) {
 			
-			if ((i != 17&&j!=13)|| (i != 17 && j != 0)) {
-				tmp[i][j] = array[i][j] + (array[i][j] - arraybuff[i][j]) + forces[i][j]*glm::pow(deltaTime, 2.f);
+			if ((i != 17&&j !=13) || (i != 17 && j != 0)) {
+				tmp[i][j] = array[i][j] + (array[i][j] - arraybuff[i][j]) + forces[i][j] * glm::pow(deltaTime, 2.f);
 				arraybuff[i][j] = array[i][j];
 				array[i][j] = tmp[i][j];
 				speed[i][j] = (array[i][j] - arraybuff[i][j]) / deltaTime;
+			}
+			else {
+				
 			}
 		}
 	}
@@ -268,7 +300,16 @@ void PhysicsInit() {
 	// Do your initialization code here...
 	for (int i = 0; i < SIZE_C;++i) {
 		for (int j = 0; j < SIZE_R; ++j) {
-			posBuff[i][j] = pos[i][j] = { 0, -5+i*distance, -5+j*distance};
+			/*if ((i == 17 && j == 13)) {
+				posBuff[i][j] = pos[i][j] = { 3, 10, 5 };
+			}
+			else if ((i == 17 && j == 0)) {
+				posBuff[i][j] = pos[i][j] = { 3, 10, -5 };
+			}
+			else {
+				
+			}*/
+			posBuff[i][j] = pos[i][j] = { 3, i*distance, -5 + j*distance };
 		}
 	}
 	
