@@ -23,13 +23,31 @@ namespace ClothMesh {
 bool show_test_window = false;
 void GUI() {
 	bool show = true;
-	ImGui::Begin("Physics Parameters", &show, 0);
+	ImGui::Begin("Physics Parameters", &show, ImVec2(300, 300), 0.1f);
 
-	// Do your GUI code here....
+	
 	{	
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);//FrameRate
+
+		if (ImGui::TreeNode("Elasticity"))
+		{
+			ImGui::InputFloat("Elasticity", &elasticity);
+
+			ImGui::TreePop();
+		}
+
+
+
+		if (ImGui::TreeNode("Damping"))
+		{
+			ImGui::InputFloat("Damping", &damping);
+
+			ImGui::TreePop();
+		}
+		
+		
 	}
-	// .........................
+	
 	
 	ImGui::End();
 
