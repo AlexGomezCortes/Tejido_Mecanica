@@ -1,0 +1,11 @@
+﻿  physics.cpp
+c:\users\massimoboettesta\desktop\ropa\code\src\physics.cpp(93): warning C4804: '<': unsafe use of type 'bool' in operation
+c:\users\massimoboettesta\desktop\ropa\code\src\physics.cpp(108): warning C4804: '<': unsafe use of type 'bool' in operation
+c:\users\massimoboettesta\desktop\ropa\code\src\physics.cpp(124): warning C4804: '<': unsafe use of type 'bool' in operation
+c:\users\massimoboettesta\desktop\ropa\code\src\physics.cpp(141): warning C4804: '>': unsafe use of type 'bool' in operation
+c:\users\massimoboettesta\desktop\ropa\code\src\physics.cpp(218): warning C4552: '+': operator has no effect; expected operator with side-effect
+c:\users\massimoboettesta\desktop\ropa\code\src\physics.cpp(219): warning C4552: '+': operator has no effect; expected operator with side-effect
+  GL_framework.vcxproj -> C:\Users\massimoboettesta\Desktop\Ropa\x64\Debug\GL_framework.exe
+  GL_framework.vcxproj -> C:\Users\massimoboettesta\Desktop\Ropa\x64\Debug\GL_framework.pdb (Partial PDB)
+  0 File(s) copied
+  0 File(s) copied
