@@ -1,22 +1,5 @@
-<<<<<<< HEAD
 ﻿  physics.cpp
-c:\users\massimoboettesta\desktop\tejido_mecanica\ropa\code\src\physics.cpp(113): warning C4804: '<': unsafe use of type 'bool' in operation
-c:\users\massimoboettesta\desktop\tejido_mecanica\ropa\code\src\physics.cpp(135): warning C4804: '<': unsafe use of type 'bool' in operation
-c:\users\massimoboettesta\desktop\tejido_mecanica\ropa\code\src\physics.cpp(157): warning C4804: '<': unsafe use of type 'bool' in operation
-c:\users\massimoboettesta\desktop\tejido_mecanica\ropa\code\src\physics.cpp(179): warning C4804: '>': unsafe use of type 'bool' in operation
   GL_framework.vcxproj -> C:\Users\massimoboettesta\Desktop\Tejido_Mecanica\Ropa\x64\Debug\GL_framework.exe
   GL_framework.vcxproj -> C:\Users\massimoboettesta\Desktop\Tejido_Mecanica\Ropa\x64\Debug\GL_framework.pdb (Partial PDB)
   0 File(s) copied
   0 File(s) copied
-=======
-﻿  physics.cpp
-e:\mecánica_tejido\tejido_mecanica\tejido_mecanica\ropa\code\src\physics.cpp(122): warning C4804: '<': uso no seguro del tipo 'bool' en la operación
-e:\mecánica_tejido\tejido_mecanica\tejido_mecanica\ropa\code\src\physics.cpp(137): warning C4804: '<': uso no seguro del tipo 'bool' en la operación
-e:\mecánica_tejido\tejido_mecanica\tejido_mecanica\ropa\code\src\physics.cpp(153): warning C4804: '<': uso no seguro del tipo 'bool' en la operación
-e:\mecánica_tejido\tejido_mecanica\tejido_mecanica\ropa\code\src\physics.cpp(170): warning C4804: '>': uso no seguro del tipo 'bool' en la operación
-e:\mecánica_tejido\tejido_mecanica\tejido_mecanica\ropa\code\src\physics.cpp(241): warning C4552: '+': el operador no tiene efecto; se esperaba un operador con efecto secundario
-e:\mecánica_tejido\tejido_mecanica\tejido_mecanica\ropa\code\src\physics.cpp(242): warning C4552: '+': el operador no tiene efecto; se esperaba un operador con efecto secundario
-  GL_framework.vcxproj -> E:\Mecánica_Tejido\Tejido_Mecanica\Tejido_Mecanica\Ropa\x64\Debug\GL_framework.exe
-  0 archivo(s) copiado(s)
-  0 archivo(s) copiado(s)
->>>>>>> master

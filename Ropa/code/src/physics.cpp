@@ -10,9 +10,9 @@
 glm::vec3 pos[SIZE_C][SIZE_R];
 glm::vec3 speed[SIZE_C][SIZE_R];
 glm::vec3 forces[SIZE_C][SIZE_R];
-float distance = 0.5f;
+float distance = 0.4f;
 float diagonal = glm::sqrt((glm::pow(distance, 2) + glm::pow(distance, 2)));
-float elasticity = 4.f;
+float elasticity = 40.f;
 float damping = 2.f;
 float Reset_Time;
 bool UseColls;
@@ -77,205 +77,214 @@ void SpringForcesStructural(glm::vec3 positions[][14])
 			//ESQUINA IZQUIERDA ARRIBA
 			if (i == SIZE_C - 1 && j ==0) {
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 1]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
 				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 2]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j]) - distance*2)) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 2][j]));
 			}
 			//ESQUINA DERECHA ARRIBA
 			else if (i == SIZE_C-1 && j == SIZE_R-1) {
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
 				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j]) - distance*2)) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2]) - distance*2)) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
 			//ESQUINA IZQUIERDA ABAJO
 			else if (i == 0 && j == 0) {
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
+			
+				forces[i][j] += -((elasticity*(glm::length(positions[i][j]-positions[i + 1][j]) - distance)) + damping*glm::dot((speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::length(positions[i][j]- positions[i][j + 1]) - distance)) + damping*glm::dot((speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 1]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::length(positions[i][j]- positions[i + 1][j + 1]) - diagonal)) + damping*glm::dot((speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
 				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+				forces[i][j] += -((elasticity*(glm::length(positions[i][j]- positions[i + 2][j]) - distance*2)) + damping*glm::dot((speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+				forces[i][j] += -((elasticity*(glm::length(positions[i][j]- positions[i][j + 2]) - distance*2)) + damping*glm::dot((speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 2]));
 			}
 			//ESQUINA DERECHA ABAJO
 			else if (i == 0 && j == SIZE_R-1) {
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 1]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
 				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2]) - distance*2)) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
 			//IZQUIERDA
-			else if ((1<i<SIZE_C-1)&&j==0) {
+			else if ((1<=i)&&(i<SIZE_C-1)&&(j==0)) {
+				
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 1]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
 				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
-					glm::normalize((positions[i][j] - positions[i + 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
-					glm::normalize((positions[i][j] - positions[i - 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+				if (i != SIZE_C - 2 && i>1)
+				{
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+						glm::normalize((positions[i][j] - positions[i + 2][j]));
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+						glm::normalize((positions[i][j] - positions[i - 2][j]));
+
+				}
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 2]));
+				
 			}
 			//DERECHA
-			else if ((1<i<SIZE_C-1) && j == SIZE_R-1) {
+			else if ((1<=i)&&(i<SIZE_C-1) && j == SIZE_R-1) {
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 1]));
-				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
+				////SHEAR
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
-					glm::normalize((positions[i][j] - positions[i + 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
-					glm::normalize((positions[i][j] - positions[i - 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+				////BENDING
+				if (i != SIZE_C - 2 && i>1)
+				{
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+						glm::normalize((positions[i][j] - positions[i + 2][j]));
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+						glm::normalize((positions[i][j] - positions[i - 2][j]));
+				}			
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 2]));
 			}
 			//ABAJO
-			else if (i==0&&(1<j<SIZE_R-1)) {
+			if (i==0&&(1<=j)&&(j<SIZE_R-1)) {
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 1]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
 				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+				if (j != SIZE_R - 2 && j > 1)
+				{
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+						glm::normalize((positions[i][j] - positions[i][j - 2]));
+	
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+						glm::normalize((positions[i][j] - positions[i][j + 2]));
+				}
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
-					glm::normalize((positions[i][j] - positions[i][j + 2]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
-					glm::normalize((positions[i][j] - positions[i][j - 2]));
+
+				
 			}
 			//ARRIBA
-			else if (i==SIZE_C-1&&(SIZE_R - 1>j>1)) {
+			else if ((i==SIZE_C-1)&&(j<SIZE_R - 1)&&(j>=1)) {
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
-					glm::normalize((positions[i][j] - positions[i + 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 1]));
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
+					glm::normalize((positions[i][j] - positions[i][j + 1]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
 				//BENDING
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+				if (j != SIZE_R - 2 && j > 1)
+				{
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+						glm::normalize((positions[i][j] - positions[i][j + 2]));
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+						glm::normalize((positions[i][j] - positions[i][j - 2]));
+				}
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
-					glm::normalize((positions[i][j] - positions[i][j + 2]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
-					glm::normalize((positions[i][j] - positions[i][j - 2]));
+				
 			}
 			//RESTO
-			else{
+			else if (i>1 && i<SIZE_C-1 && j>1 && j<SIZE_R-1){
 				//STRUCTURAL
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j]), glm::normalize((positions[i][j] - positions[i + 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j]), glm::normalize((positions[i][j] - positions[i - 1][j]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 1])- distance)) + glm::dot(damping*(speed[i][j] - speed[i][j + 1]), glm::normalize((positions[i][j] - positions[i][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j + 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 1]) - distance)) + glm::dot(damping*(speed[i][j] - speed[i][j - 1]), glm::normalize((positions[i][j] - positions[i][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i][j - 1]));
 				//SHEAR
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
 					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
+				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1]) - diagonal)) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
 					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
 				//BENDING
-<<<<<<< HEAD
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
-					glm::normalize((positions[i][j] - positions[i + 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
-					glm::normalize((positions[i][j] - positions[i - 2][j]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
-					glm::normalize((positions[i][j] - positions[i][j + 2]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
-					glm::normalize((positions[i][j] - positions[i][j - 2]));
+				if (j != SIZE_R - 2 && j > 1 && i != SIZE_C - 2 && i > 1)
+				{
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
+						glm::normalize((positions[i][j] - positions[i + 2][j]));
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
+						glm::normalize((positions[i][j] - positions[i - 2][j]));
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
+						glm::normalize((positions[i][j] - positions[i][j + 2]));
+					forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2]) - distance * 2)) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
+						glm::normalize((positions[i][j] - positions[i][j - 2]));
+				}
+			
 				
 			}
 		}
 	}
-
-=======
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
-					glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
-					glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
-					glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
-				forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - distance * 2) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
-					glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
-			}
-
-			}
-		}
->>>>>>> master
 }
+
 
 void SpringForcesShear(glm::vec3 positions[][14]) {
 	for (int i = 0; i < SIZE_C; ++i) {
@@ -309,10 +318,10 @@ void SpringForcesBending(glm::vec3 positions[][14]) {
 }
 
 void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
-	glm::vec3 gravity = { 0, -9.8f, 0 };
+	glm::vec3 gravity = { 0, -9.81f, 0 };
 	glm::vec3 tmp[SIZE_C][SIZE_R];
 	//RESET FORCES
-	for (int i = 0; i < SIZE_C; ++i) {
+	for(int i = 0; i < SIZE_C; ++i) {
 		for (int j = 0; j < SIZE_R; ++j) {
 			forces[i][j] = gravity;
 		}
@@ -325,17 +334,20 @@ void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
 
 	//RESTRICTIONS
 	for (int i = 0; i < SIZE_C; ++i) {
+
 		for (int j = 0; j < SIZE_R; ++j) {
 			
-			if ((i != 17&&j !=13) || (i != 17 && j != 0)) {
+			
+			if ((i == 17&&j ==13) || (i == 17 && j == 0)) {
+				
+			}
+			else {
 				tmp[i][j] = array[i][j] + (array[i][j] - arraybuff[i][j]) + forces[i][j] * glm::pow(deltaTime, 2.f);
 				arraybuff[i][j] = array[i][j];
 				array[i][j] = tmp[i][j];
 				speed[i][j] = (array[i][j] - arraybuff[i][j]) / deltaTime;
 			}
-			else {
-				
-			}
+
 		}
 	}
 }
