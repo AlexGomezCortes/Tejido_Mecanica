@@ -3,16 +3,25 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <time.h>
+#include "OurHeader.h"
 
 #define SIZE_R 14
 #define SIZE_C 18
 #define SIZE 252
+
+ bool renderSphere=false;
+ bool renderCapsule = false;
+ bool renderParticles = false;
+ bool renderCloth=true;
+ bool renderCube = false;
 
 glm::vec3 Normal;
 
 glm::vec3 pos[SIZE_C][SIZE_R];
 glm::vec3 speed[SIZE_C][SIZE_R];
 glm::vec3 forces[SIZE_C][SIZE_R];
+glm::vec3 PointsBeforeSphereCol[SIZE_C][SIZE_R];
+glm::vec3 VelocidadParticulasAnterior[SIZE_C][SIZE_R];
 float distance = 0.3f;
 float diagonal = glm::sqrt((glm::pow(distance, 2) + glm::pow(distance, 2)));
 glm::vec3 CubePlaneNormals[6] = { glm::vec3(0.f,0.f,1.f),glm::vec3(0.f,0.f,-1.f),glm::vec3(0.f,1.f,0.f),glm::vec3(0.f,-1.f,0.f),glm::vec3(1.f,0.f,0.f),glm::vec3(-1.f,0.f,0.f) };
@@ -22,10 +31,13 @@ float Reset_Time=5.f;
 float currentTime;
 bool UseColls;
 bool UseSphere;
-glm::vec3 acceleration = { 0.f,-3.f,0.f };
-glm::vec2 k_stretch = {200.f,2.f};
+glm::vec3 SpherePos = {0,0,0};
+float SphereRadius=1.f;
+glm::vec3 acceleration = { 0.f,-9.81f,0.f };
+glm::vec2 k_stretch = {200,2.f};
 glm::vec2 k_shear= { 200.f,2.f };
 glm::vec2 k_bend= { 200.f,2.f };
+
 glm::vec3 posBuff[SIZE_C][SIZE_R];
 
 namespace ClothMesh {
@@ -56,7 +68,8 @@ void GUI() {
 		if (ImGui::TreeNode("Collisions"))
 		{
 			ImGui::Checkbox("Use collisions", &UseColls);
-			ImGui::Checkbox("Use Sphere Collider", &UseSphere);
+			ImGui::Checkbox("Use Sphere Collider", &renderSphere);
+		
 
 			ImGui::TreePop();
 		}
@@ -370,6 +383,79 @@ bool CalcCollision(glm::vec3 positions[][14], glm::vec3 positionsBuff[][14],int 
 			}
 }
 
+void CalcSphereCollision(glm::vec3 PosicionesParticulas[][SIZE_R], glm::vec3 PosicionesParticulas_2[][SIZE_R], int i, int j)
+{
+	glm::vec3 SphereMinusParticle;
+	float DistancePartSphere;
+
+	SphereMinusParticle = SpherePos - PosicionesParticulas[i][j];
+	DistancePartSphere = (glm::sqrt((SphereMinusParticle.x*SphereMinusParticle.x) + (SphereMinusParticle.y*SphereMinusParticle.y) + (SphereMinusParticle.z*SphereMinusParticle.z))) - SphereRadius;
+	
+	PointsBeforeSphereCol[i][j] = PosicionesParticulas[i][j];
+
+	if (DistancePartSphere <= 0.0f)
+	{
+		std::cout << DistancePartSphere << std::endl;
+
+		glm::vec3 HitPoint; //punto de choque esfera particula
+		glm::vec3 VectorRecta; //vector de la recta que intersecciona con la espera, el cual es "PosicionesParticulas[i] - PointsBeforeSphereCol[i]"
+		glm::vec3 NormalPlaneCollisionPoint; //normal del plano tangente al punto de colision, punto de colision menos el centro de la esfera
+		glm::vec3 NewPointAfterCol;
+		float Alfa;
+		float Alfa1;
+		float DistanciaPuntoColisionConPlano; //puntode antes de entrar en la esfera con el plano
+		float DPlano; //D de la ecuación del plano, normal plano por punto de colision
+
+		VectorRecta = PosicionesParticulas[i][j] - PointsBeforeSphereCol[i][j];
+
+		float a = glm::pow(PointsBeforeSphereCol[i][j].x - SpherePos[0], 2) + glm::pow(PointsBeforeSphereCol[i][j].y - SpherePos[1], 2) + std::pow(PointsBeforeSphereCol[i][j].z - SpherePos[2], 2) - std::pow(SphereRadius, 2) + 2 * ((PointsBeforeSphereCol[i][j].x - SpherePos[0]) + (PointsBeforeSphereCol[i][j].y - SpherePos[1]) + (PointsBeforeSphereCol[i][j].z - SpherePos[2]));
+
+		float b = 2.f*((PosicionesParticulas[i][j].x - PointsBeforeSphereCol[i][j].x) + (PosicionesParticulas[i][j].y - PointsBeforeSphereCol[i][j].y) + (PosicionesParticulas[i][j].z - PointsBeforeSphereCol[i][j].z)*-1.f);
+
+		float c = std::pow(std::pow(PosicionesParticulas[i][j].x - PointsBeforeSphereCol[i][j].x, 2) + std::pow(PosicionesParticulas[i][j].y - PointsBeforeSphereCol[i][j].y, 2) + std::pow(PosicionesParticulas[i][j].z - PointsBeforeSphereCol[i][j].z, 2), 2);
+
+
+		Alfa = b + std::sqrt(std::pow(b, 2) - 4 * (a * c)) / (2 * a);
+		Alfa1 = b - std::sqrt(std::pow(b, 2) - 4 * (a * c)) / (2 * a);
+
+		if (Alfa < Alfa1) //calculamos el punto de colision
+		{
+			HitPoint.x = PosicionesParticulas[i][j].x + VectorRecta.x*(Alfa);
+			HitPoint.y = PosicionesParticulas[i][j].y + VectorRecta.y*(Alfa);
+			HitPoint.z = PosicionesParticulas[i][j].z + VectorRecta.z*(Alfa);
+
+			HitPoint.x = PosicionesParticulas_2[i][j].x + VectorRecta.x*(Alfa);
+			HitPoint.y = PosicionesParticulas_2[i][j].y + VectorRecta.y*(Alfa);
+			HitPoint.z = PosicionesParticulas_2[i][j].z + VectorRecta.z*(Alfa);
+		}
+		else
+		{
+			HitPoint.x = PosicionesParticulas[i][j].x + VectorRecta.x*(Alfa1);
+			HitPoint.y = PosicionesParticulas[i][j].y + VectorRecta.y*(Alfa1);
+			HitPoint.z = PosicionesParticulas[i][j].z + VectorRecta.z*(Alfa1);
+
+			HitPoint.x = PosicionesParticulas_2[i][j].x + VectorRecta.x*(Alfa1);
+			HitPoint.y = PosicionesParticulas_2[i][j].y + VectorRecta.y*(Alfa1);
+			HitPoint.z = PosicionesParticulas_2[i][j].z + VectorRecta.z*(Alfa1);
+		}
+
+		NormalPlaneCollisionPoint = glm::normalize(HitPoint - SpherePos);
+
+		DPlano = -glm::dot(NormalPlaneCollisionPoint, HitPoint);
+
+		//speed[i][j] = VelocidadParticulasAnterior[i][j];
+
+		NewPointAfterCol = (PosicionesParticulas[i][j]) - 2.0f* (glm::dot(NormalPlaneCollisionPoint, PosicionesParticulas[i][j]) + DPlano)*NormalPlaneCollisionPoint;
+		PosicionesParticulas[i][j] = NewPointAfterCol;
+
+		//speed[i][j] = VelocidadParticulasAnterior[i][j] - (2.f*(glm::dot(NormalPlaneCollisionPoint, VelocidadParticulasAnterior[i][j])) * NormalPlaneCollisionPoint);
+
+
+	}
+
+
+}
+
 void CalcPosition(glm::vec3 &position, glm::vec3 &positionsBuff,glm::vec3 &speed) {
 		if (Normal == glm::vec3(0.f, 1.f, 0.f)) {
 			position = position - (2 * (glm::dot(Normal, position) + 0.f)*Normal);
@@ -410,6 +496,7 @@ void CalcPosition(glm::vec3 &position, glm::vec3 &positionsBuff,glm::vec3 &speed
 
 void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
 	glm::vec3 tmp[SIZE_C][SIZE_R];
+
 	//RESET FORCES
 	for(int i = 0; i < SIZE_C; ++i) {
 		for (int j = 0; j < SIZE_R; ++j) {
@@ -418,9 +505,6 @@ void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
 	}
 	//APPLY FORCES
 	SpringForcesStructural(pos);
-	
-	//SpringForcesShear(pos);
-	//SpringForcesBending(pos);
 
 	//RESTRICTIONS
 	diagonal = glm::sqrt((glm::pow(distance, 2) + glm::pow(distance, 2)));
@@ -437,12 +521,15 @@ void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
 				arraybuff[i][j] = array[i][j];
 				array[i][j] = tmp[i][j];
 				speed[i][j] = (array[i][j]-arraybuff[i][j]) / deltaTime;
+
 				if (CalcCollision(array,arraybuff,i,j) == true) {
 					CalcPosition(array[i][j], arraybuff[i][j],speed[i][j]);
 				}
 			}
-
+			if (renderSphere)
+			CalcSphereCollision(pos, posBuff, i, j);
 		}
+	
 	}
 }
 
@@ -459,20 +546,25 @@ void PhysicsUpdate(float dt) {
 	if (currentTime<=0) {
 		StartMesh(pos);
 		currentTime = Reset_Time;
+		SpherePos = { rand() % 5,rand() % (5),0};
 	}
 	else {
 		currentTime -= dt;
 	}
-	if (UseSphere)
-		Sphere::
 
 	Verlet(pos, posBuff, dt);
 
+	if (renderSphere)
+	{
+		
+		Sphere::updateSphere(SpherePos, 1.f);
+	}
+		
+
 	ClothMesh::updateClothMesh(&pos[0][0].x);
-	// ...........................
 }
 
-void PhysicsCleanup() {
-	// Do your cleanup code here...
-	// ............................
+void PhysicsCleanup() 
+{
+
 }
