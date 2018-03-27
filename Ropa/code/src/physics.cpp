@@ -306,8 +306,6 @@ void SpringForcesStructural(glm::vec3 positions[][14])
 					forces[i][j] += -((k_bend.x*(glm::distance(positions[i][j], positions[i][j - 2]) - distance * 2)) + k_bend.y*glm::dot((speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
 						glm::normalize((positions[i][j] - positions[i][j - 2]));
 				}
-			
-				
 			}
 		}
 	}
@@ -390,8 +388,8 @@ void CalcSphereCollision(glm::vec3 PosicionesParticulas[][SIZE_R], glm::vec3 Pos
 		float c = std::pow(std::pow(PosicionesParticulas[i][j].x - PointsBeforeSphereCol[i][j].x, 2) + std::pow(PosicionesParticulas[i][j].y - PointsBeforeSphereCol[i][j].y, 2) + std::pow(PosicionesParticulas[i][j].z - PointsBeforeSphereCol[i][j].z, 2), 2);
 
 
-		Alfa = b + std::sqrt(std::pow(b, 2) - 4 * (a * c)) / (2 * a);
-		Alfa1 = b - std::sqrt(std::pow(b, 2) - 4 * (a * c)) / (2 * a);
+		Alfa = -b + std::sqrt(std::pow(b, 2) - 4 * (a * c)) / (2 * a);
+		Alfa1 = -b - std::sqrt(std::pow(b, 2) - 4 * (a * c)) / (2 * a);
 
 		if (Alfa < Alfa1) //calculamos el punto de colision
 		{
@@ -418,12 +416,12 @@ void CalcSphereCollision(glm::vec3 PosicionesParticulas[][SIZE_R], glm::vec3 Pos
 
 		DPlano = -glm::dot(NormalPlaneCollisionPoint, HitPoint);
 
-		//speed[i][j] = VelocidadParticulasAnterior[i][j];
+		speed[i][j] = VelocidadParticulasAnterior[i][j];
 
 		NewPointAfterCol = (PosicionesParticulas[i][j]) - 2.0f* (glm::dot(NormalPlaneCollisionPoint, PosicionesParticulas[i][j]) + DPlano)*NormalPlaneCollisionPoint;
 		PosicionesParticulas[i][j] = NewPointAfterCol;
 
-		//speed[i][j] = VelocidadParticulasAnterior[i][j] - (2.f*(glm::dot(NormalPlaneCollisionPoint, VelocidadParticulasAnterior[i][j])) * NormalPlaneCollisionPoint);
+		speed[i][j] = VelocidadParticulasAnterior[i][j] - (2.f*(glm::dot(NormalPlaneCollisionPoint, VelocidadParticulasAnterior[i][j])) * NormalPlaneCollisionPoint);
 
 
 	}
@@ -492,13 +490,13 @@ void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
 				
 			}
 			else {
+				
 				tmp[i][j] = array[i][j] + (array[i][j] - arraybuff[i][j]) + forces[i][j] * glm::pow(deltaTime, 2.f);
 				arraybuff[i][j] = array[i][j];
 				array[i][j] = tmp[i][j];
-				speed[i][j] = (array[i][j]-arraybuff[i][j]) / deltaTime;
-
-				if (CalcCollision(array,arraybuff,i,j)==true) {
-					CalcPosition(array[i][j], arraybuff[i][j],speed[i][j]);
+				speed[i][j] = (array[i][j] - arraybuff[i][j]) / deltaTime;
+				if (CalcCollision(array, arraybuff, i, j) == true) {
+					CalcPosition(array[i][j], arraybuff[i][j], speed[i][j]);
 				}
 			}
 			if (renderSphere)
@@ -530,7 +528,10 @@ void PhysicsUpdate(float dt) {
 			currentTime -= dt;
 		}
 
-		Verlet(pos, posBuff, dt);
+		for (int i = 0; i < 10; ++i) {
+			Verlet(pos, posBuff, dt/10);
+		}
+		
 
 		if (renderSphere)
 		{
