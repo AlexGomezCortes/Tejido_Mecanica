@@ -15,6 +15,8 @@
  bool renderCloth=true;
  bool renderCube = false;
 
+ bool PlaySimulation = false;
+
 glm::vec3 Normal;
 
 glm::vec3 pos[SIZE_C][SIZE_R];
@@ -22,17 +24,22 @@ glm::vec3 speed[SIZE_C][SIZE_R];
 glm::vec3 forces[SIZE_C][SIZE_R];
 glm::vec3 PointsBeforeSphereCol[SIZE_C][SIZE_R];
 glm::vec3 VelocidadParticulasAnterior[SIZE_C][SIZE_R];
+
 float distance = 0.3f;
 float diagonal = glm::sqrt((glm::pow(distance, 2) + glm::pow(distance, 2)));
+
 glm::vec3 CubePlaneNormals[6] = { glm::vec3(0.f,0.f,1.f),glm::vec3(0.f,0.f,-1.f),glm::vec3(0.f,1.f,0.f),glm::vec3(0.f,-1.f,0.f),glm::vec3(1.f,0.f,0.f),glm::vec3(-1.f,0.f,0.f) };
+
 float elasticity = 50.f;
 float damping = 2.f;
 float Reset_Time=5.f;
 float currentTime;
 bool UseColls;
 bool UseSphere;
+
 glm::vec3 SpherePos = {0,0,0};
 float SphereRadius=1.f;
+
 glm::vec3 acceleration = { 0.f,-9.81f,0.f };
 glm::vec2 k_stretch = {200,2.f};
 glm::vec2 k_shear= { 200.f,2.f };
@@ -52,7 +59,9 @@ void GUI() {
 	
 	{	
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);//FrameRate
+		ImGui::Checkbox("Play simulation", &PlaySimulation);
 		ImGui::InputFloat("Reset Time", &Reset_Time);
+	
 		ImGui::InputFloat3("Gravity", &acceleration.x);
 
 		if (ImGui::TreeNode("Spring Parameters"))
@@ -304,38 +313,6 @@ void SpringForcesStructural(glm::vec3 positions[][14])
 	}
 }
 
-
-void SpringForcesShear(glm::vec3 positions[][14]) {
-	for (int i = 0; i < SIZE_C; ++i) {
-		for (int j = 0; j < SIZE_R; ++j) {
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j + 1]), glm::normalize((positions[i][j] - positions[i + 1][j + 1]))))*
-				glm::normalize((positions[i][j] - positions[i + 1][j + 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j - 1]), glm::normalize((positions[i][j] - positions[i - 1][j - 1]))))*
-				glm::normalize((positions[i][j] - positions[i - 1][j - 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 1][j + 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i - 1][j + 1]), glm::normalize((positions[i][j] - positions[i - 1][j + 1]))))*
-				glm::normalize((positions[i][j] - positions[i - 1][j + 1]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 1][j - 1])) - diagonal) + glm::dot(damping*(speed[i][j] - speed[i + 1][j - 1]), glm::normalize((positions[i][j] - positions[i + 1][j - 1]))))*
-				glm::normalize((positions[i][j] - positions[i + 1][j - 1]));
-		}
-	}
-}
-
-void SpringForcesBending(glm::vec3 positions[][14]) {
-	for (int i = 0; i < SIZE_C; i ++) {
-		for (int j = 0; j < SIZE_R; j ++) {
-
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i + 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i + 2][j]), glm::normalize((positions[i][j] - positions[i + 2][j]))))*
-				glm::normalize((positions[i][j] - positions[i + 2][j]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i - 2][j])) - distance) + glm::dot(damping*(speed[i][j] - speed[i - 2][j]), glm::normalize((positions[i][j] - positions[i - 2][j]))))*
-				glm::normalize((positions[i][j] - positions[i - 2][j]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j + 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j + 2]), glm::normalize((positions[i][j] - positions[i][j + 2]))))*
-				glm::normalize((positions[i][j] - positions[i][j + 2]));
-			forces[i][j] += -((elasticity*(glm::distance(positions[i][j], positions[i][j - 2])) - distance) + glm::dot(damping*(speed[i][j] - speed[i][j - 2]), glm::normalize((positions[i][j] - positions[i][j - 2]))))*
-				glm::normalize((positions[i][j] - positions[i][j - 2]));
-		}
-	}
-}
-
 void StartMesh(glm::vec3 positions[][14]) {
 	for (int i = 0; i < SIZE_C; ++i) {
 		for (int j = 0; j < SIZE_R; ++j) {
@@ -395,8 +372,6 @@ void CalcSphereCollision(glm::vec3 PosicionesParticulas[][SIZE_R], glm::vec3 Pos
 
 	if (DistancePartSphere <= 0.0f)
 	{
-		std::cout << DistancePartSphere << std::endl;
-
 		glm::vec3 HitPoint; //punto de choque esfera particula
 		glm::vec3 VectorRecta; //vector de la recta que intersecciona con la espera, el cual es "PosicionesParticulas[i] - PointsBeforeSphereCol[i]"
 		glm::vec3 NormalPlaneCollisionPoint; //normal del plano tangente al punto de colision, punto de colision menos el centro de la esfera
@@ -406,7 +381,7 @@ void CalcSphereCollision(glm::vec3 PosicionesParticulas[][SIZE_R], glm::vec3 Pos
 		float DistanciaPuntoColisionConPlano; //puntode antes de entrar en la esfera con el plano
 		float DPlano; //D de la ecuación del plano, normal plano por punto de colision
 
-		VectorRecta = PosicionesParticulas[i][j] - PointsBeforeSphereCol[i][j];
+		VectorRecta =PosicionesParticulas[i][j] - PointsBeforeSphereCol[i][j];
 
 		float a = glm::pow(PointsBeforeSphereCol[i][j].x - SpherePos[0], 2) + glm::pow(PointsBeforeSphereCol[i][j].y - SpherePos[1], 2) + std::pow(PointsBeforeSphereCol[i][j].z - SpherePos[2], 2) - std::pow(SphereRadius, 2) + 2 * ((PointsBeforeSphereCol[i][j].x - SpherePos[0]) + (PointsBeforeSphereCol[i][j].y - SpherePos[1]) + (PointsBeforeSphereCol[i][j].z - SpherePos[2]));
 
@@ -522,7 +497,7 @@ void Verlet(glm::vec3 array[][14], glm::vec3 arraybuff[][14], float deltaTime) {
 				array[i][j] = tmp[i][j];
 				speed[i][j] = (array[i][j]-arraybuff[i][j]) / deltaTime;
 
-				if (CalcCollision(array,arraybuff,i,j) == true) {
+				if (CalcCollision(array,arraybuff,i,j)==true) {
 					CalcPosition(array[i][j], arraybuff[i][j],speed[i][j]);
 				}
 			}
@@ -543,25 +518,28 @@ void PhysicsInit() {
 
 void PhysicsUpdate(float dt) {
 	// Do your update code here...
-	if (currentTime<=0) {
-		StartMesh(pos);
-		currentTime = Reset_Time;
-		SpherePos = { rand() % 5,rand() % (5),0};
-	}
-	else {
-		currentTime -= dt;
-	}
 
-	Verlet(pos, posBuff, dt);
-
-	if (renderSphere)
+	if (PlaySimulation)
 	{
-		
-		Sphere::updateSphere(SpherePos, 1.f);
-	}
-		
+		if (currentTime <= 0) {
+			StartMesh(pos);
+			currentTime = Reset_Time;
+			SpherePos = { rand() % 5,rand() % (5),0 };
+		}
+		else {
+			currentTime -= dt;
+		}
 
-	ClothMesh::updateClothMesh(&pos[0][0].x);
+		Verlet(pos, posBuff, dt);
+
+		if (renderSphere)
+		{
+			Sphere::updateSphere(SpherePos, 1.f);
+		}
+
+		ClothMesh::updateClothMesh(&pos[0][0].x);
+	}
+
 }
 
 void PhysicsCleanup() 
